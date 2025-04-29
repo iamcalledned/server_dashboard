@@ -1,5 +1,6 @@
 from flask import Flask, render_template
-from .api_health import api_health_bp
+from backend.api_health import api_health_bp
+
 
 app = Flask(__name__)
 
