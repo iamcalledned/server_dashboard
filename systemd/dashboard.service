@@ -1,0 +1,12 @@
+[Unit]
+Description=Server Dashboard
+After=network.target
+
+[Service]
+User=ned
+WorkingDirectory=/home/ned/git_projects/dashboard_monitor/server-dashboard
+ExecStart=/usr/bin/python3 backend/app.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

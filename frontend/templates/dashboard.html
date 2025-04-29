@@ -1,0 +1,48 @@
+<!-- --- frontend/templates/dashboard.html --- -->
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-gray-200 min-h-screen flex flex-col items-center p-6">
+    <h1 class="text-3xl font-bold mb-6">Server Dashboard</h1>
+    <div id="services" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl">
+        <!-- Dynamic service cards inserted here -->
+    </div>
+
+    <script src="/static/dashboard.js"></script>
+</body>
+</html>
+
+
+/* --- frontend/static/dashboard.js --- */
+
+async function loadStatus() {
+    const res = await fetch('/api/health');
+    const data = await res.json();
+
+    const container = document.getElementById('services');
+    container.innerHTML = '';
+
+    for (const [service, info] of Object.entries(data)) {
+        let color = 'bg-red-500';
+        if (info.status === 'active') color = 'bg-green-600';
+        else if (info.status === 'inactive') color = 'bg-yellow-500';
+
+        container.innerHTML += `
+            <div class="p-6 rounded-lg shadow-lg ${color} text-white">
+                <h2 class="text-xl font-bold capitalize mb-2">${service.replace('_', ' ')}</h2>
+                <p><span class="font-semibold">Status:</span> ${info.status}</p>
+                ${info.details ? `<p><span class='font-semibold'>Details:</span> ${info.details}</p>` : ''}
+                ${info.users_logged_in !== undefined ? `<p><span class='font-semibold'>Users:</span> ${info.users_logged_in}</p>` : ''}
+                ${info.connections !== undefined ? `<p><span class='font-semibold'>Connections:</span> ${info.connections}</p>` : ''}
+            </div>
+        `;
+    }
+}
+
+setInterval(loadStatus, 5000); // Auto-refresh every 5 seconds
+window.onload = loadStatus;
